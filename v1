@@ -1,0 +1,34 @@
+import pandas as pd
+data = pd.read_excel(r'C:\Users\alexi\OneDrive\Desktop\Ex_Nico_1_20230902.xlsx')
+data = data.sort_values(by='Price per unit', ascending=False)
+order = data['Order'].tolist()
+batch_size = data ['Batch size'].tolist()
+inventory = 80
+
+def order_filled (order,batch_size, inventory):
+    llist = []
+
+    for i in range(len(order)):
+        max_fill_order_order_size = order[i] // batch_size[i]
+        max_fill_order_inventory_size = inventory // batch_size[i]
+        batch_filled = min(max_fill_order_order_size,max_fill_order_inventory_size)
+        inventory = inventory - (batch_filled*batch_size[i])
+        llist.append(batch_filled*batch_size[i])
+    return llist
+
+result = order_filled(order,batch_size, inventory)
+
+data['order_filled'] = result
+data['order not filled'] = data['Order']-data['order_filled']
+data['sale filled']= data['order_filled'] * data['Price per unit']
+data['sale unfilled'] = data['order not filled']*data['Price per unit']
+data.to_excel(r'C:\Users\alexi\OneDrive\Desktop\Ex_Nico_1_20230902.xlsx',index=False,engine='openpyxl')
+
+sum_order = data['Order'].sum()
+sum_order_not_filled = data['order not filled'].sum()
+
+print (order)
+print (batch_size)
+print (result)
+print (sum_order)
+print (sum_order_not_filled)
